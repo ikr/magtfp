@@ -1,7 +1,7 @@
 {
   "name": "@ikr/magftp",
   "version": "1.0.0",
-  "description": "The code I write while reading @deboolean's book",
+  "description": "The code I write while reading @drboolean's book",
   "main": "index.js",
   "dependencies": {
     "accounting": "^0.4.1",
