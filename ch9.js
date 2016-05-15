@@ -29,3 +29,7 @@ function print(x) {
         return x;
     });
 }
+
+const cat = R.compose(R.map(print), readFile);
+
+console.dir(cat(__dirname + '/.babelrc').unsafePerformIO().unsafePerformIO());
