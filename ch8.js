@@ -119,12 +119,12 @@ class Right {
 
 //  either :: (a -> c) -> (b -> c) -> Either a b -> c
 const either = R.curry(function(f, g, e) {
-  switch (e.constructor) {
+    switch (e.constructor) {
     case Left:
-      return f(e.__value);
+        return f(e.__value);
     case Right:
-      return g(e.__value);
-  }
+        return g(e.__value);
+    }
 });
 
 const showWelcome = R.compose(R.concat('Welcome '), R.prop('name'));
