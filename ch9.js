@@ -15,6 +15,18 @@ class IO {
     static of(x) {
         return new IO(() => x);
     }
+
+    // join :: IO a
+    join() {
+        return new IO(() => {
+            return this.unsafePerformIO().unsafePerformIO();
+        });
+    }
+
+    // chain :: (a -> b) -> IO b
+    chain(f) {
+        return this.map(f).join();
+    }
 }
 
 // readFile :: String -> IO String
@@ -95,3 +107,23 @@ const safeStreetAddress = R.compose(
 
 console.dir(safeStreetAddress(user));
 console.dir(safeStreetAddress({}));
+
+// Exercise 2
+// ==========
+// Use getFile to get the filename, remove the directory so it's just the file,
+// then purely log it.
+
+function getFile() {
+    return new IO(() => __filename);
+};
+
+function pureLog(x) {
+    return new IO(function () {
+        console.log(x);
+        return 'logged ' + x;
+    });
+};
+
+const ex2 = getFile().map(R.compose(R.last, R.split('/'))).chain(pureLog);
+
+console.dir(ex2.unsafePerformIO());
