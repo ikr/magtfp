@@ -1,5 +1,6 @@
 import R from 'ramda';
 import {readFileSync} from 'fs';
+import Task from 'data.task';
 
 class IO {
     constructor(f) {
@@ -127,3 +128,33 @@ function pureLog(x) {
 const ex2 = getFile().map(R.compose(R.last, R.split('/'))).chain(pureLog);
 
 console.dir(ex2.unsafePerformIO());
+
+// Exercise 3
+// ==========
+// Use getPost() then pass the post's id to getComments().
+//
+function getPost(i) {
+    return new Task(function(rej, res) {
+        setTimeout(function() {
+            res({id: i, title: 'Love them tasks',});
+        }, 300);
+    });
+};
+
+function getComments(i) {
+    return new Task(function(rej, res) {
+        setTimeout(function() {
+            res([{
+                post_id: i,
+                body: 'This book should be illegal',
+            }, {
+                post_id: i,
+                body: 'Monads are like smelly shallots',
+            }]);
+        }, 300);
+    });
+}
+
+const t = getPost(2805) .map(R.prop('id')) .chain(getComments);
+
+t.fork(function (err) { throw err; }, console.dir);
