@@ -81,6 +81,11 @@ class Maybe {
     }
 }
 
+// maybe :: b -> (a -> b) -> Maybe a -> b
+const maybe = R.curry(function(x, f, m) {
+  return m.isNothing() ? x : f(m.__value);
+});
+
 // Exercise 1
 // ==========
 // Use safeProp and map/join or chain to safely get the street name when given
@@ -158,3 +163,83 @@ function getComments(i) {
 const t = getPost(2805) .map(R.prop('id')) .chain(getComments);
 
 t.fork(function (err) { throw err; }, console.dir);
+
+
+class Left {
+    constructor(x) {
+        this.__value = x;
+    }
+
+    static of(x) {
+        return new Left(x);
+    }
+
+    map() {
+        return this;
+    }
+}
+
+class Right {
+    constructor(x) {
+        this.__value = x;
+    }
+
+    static of(x) {
+        return new Right(x);
+    }
+
+    map(f) {
+        return Right.of(f(this.__value));
+    }
+}
+
+//  either :: (a -> c) -> (b -> c) -> Either a b -> c
+const either = R.curry(function(f, g, e) {
+    switch (e.constructor) {
+    case Left:
+        return f(e.__value);
+    case Right:
+        return g(e.__value);
+    }
+});
+
+// Exercise 4
+// ==========
+// Use validateEmail, addToMailingList, and emailBlast to implement ex4's type
+// signature.
+
+// addToMailingList :: Email -> IO([Email])
+const addToMailingList = (function (list) {
+    return function(email) {
+        return new IO(function () {
+            list.push(email);
+            return list;
+        });
+    };
+})(['one@example.com']);
+
+// emailBlast :: [Email] -> IO String
+function emailBlast(list) {
+    return new IO(function () {
+        return 'emailed: ' + list.join(', ');
+    });
+}
+
+// validateEmail :: Either String Email
+function validateEmail(x) {
+    return x.match(/\S+@\S+\.\S+/) ? (new Right(x)) : (new Left('invalid email'));
+};
+
+// ex4 :: Email -> Either String (IO String)
+const ex4 = R.compose(
+    R.map(R.chain(emailBlast)),
+    R.map(addToMailingList),
+    validateEmail
+);
+
+function info(io) {
+    console.info(io.unsafePerformIO());
+}
+
+either(console.error, info, ex4('two@example.com'));
+either(console.error, info, ex4('huh?'));
