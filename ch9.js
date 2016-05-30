@@ -104,9 +104,34 @@ const user = {
     }
 };
 
+// safeStreetName :: User -> Maybe String
+const safeStreetName = R.compose(
+    R.chain(safeProp('name')),
+    R.chain(safeProp('street')),
+    safeProp('address')
+);
+
+console.dir(safeStreetName(user));
+console.dir(safeStreetName({}));
+
+// trail :: String -> String -> String
+const trail = R.flip(R.concat);
+
+// safeFormatStreet :: Maybe Street -> Maybe String
+function safeFormatStreet(mStreet) {
+    return mStreet
+        .chain(safeProp('name'))
+        .map(trail(' '))
+        .chain(function (prefix) {
+            return mStreet.chain(safeProp('number')).map(R.concat(prefix));
+        });
+}
+
+console.dir(safeFormatStreet(Maybe.of(user.address.street)));
+
 // safeStreetAddress :: User -> Maybe String
 const safeStreetAddress = R.compose(
-    R.chain(safeProp('name')),
+    safeFormatStreet,
     R.chain(safeProp('street')),
     safeProp('address')
 );
