@@ -36,3 +36,20 @@ console.dir(ex2(Maybe.Just(2), Maybe.Just(3)));
 console.dir(ex2(Maybe.Nothing(), Maybe.Just(3)));
 console.dir(ex2(Maybe.Just(2), Maybe.Nothing()));
 console.dir(ex2(Maybe.Nothing(), Maybe.Nothing()));
+
+// TEST HELPERS
+// =====================
+
+function getPost(i) {
+    return new Task(function (rej, res) {
+        setTimeout(function () { res({ id: i, title: 'Love them futures' }); }, 300);
+    });
+}
+
+function getComments(i) {
+    return new Task(function (rej, res) {
+        setTimeout(function () {
+            res(["This book should be illegal", "Monads are like space burritos"]);
+        }, 300);
+    });
+}
