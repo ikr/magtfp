@@ -37,6 +37,17 @@ console.dir(ex2(Maybe.Nothing(), Maybe.Just(3)));
 console.dir(ex2(Maybe.Just(2), Maybe.Nothing()));
 console.dir(ex2(Maybe.Nothing(), Maybe.Nothing()));
 
+// Exercise 3
+// ==========
+// Run both getPost(n) and getComments(n) then render the page with both. (The n arg is arbitrary.)
+const makeComments = R.reduce(function(acc, c) { return acc+"<li>"+c+"</li>" }, "");
+const render = R.curry(function(p, cs) { return "<div>"+p.title+"</div>"+makeComments(cs); });
+
+//  ex3 :: Task Error HTML
+function ex3() {
+
+}
+
 // TEST HELPERS
 // =====================
 
