@@ -58,7 +58,7 @@ ex3(42).fork(console.error, console.dir);
 
 function getPost(i) {
     return new Task(function (rej, res) {
-        setTimeout(function () { res({ id: i, title: 'Love them futures' }); }, 300);
+        setTimeout(function () { res({ id: i, title: 'Love them futures' }); }, 50);
     });
 }
 
@@ -66,6 +66,58 @@ function getComments(i) {
     return new Task(function (rej, res) {
         setTimeout(function () {
             res(["This book should be illegal", "Monads are like space burritos"]);
-        }, 300);
+        }, 50);
     });
 }
+
+
+class IO {
+    constructor(f) {
+        this.unsafePerformIO = f;
+    }
+
+    // map :: (a -> b) -> IO b
+    map(f) {
+        return new IO(R.compose(f, this.unsafePerformIO));
+    }
+
+    // of :: a -> IO a
+    static of(x) {
+        return new IO(() => x);
+    }
+
+    // join :: IO a
+    join() {
+        return new IO(() => {
+            return this.unsafePerformIO().unsafePerformIO();
+        });
+    }
+
+    // chain :: (a -> b) -> IO b
+    chain(f) {
+        return this.map(f).join();
+    }
+    // ap :: IO a
+    ap(a) {
+        return this.chain(f => a.map(f));
+    }
+}
+
+// Exercise 4
+// ==========
+// Write an IO that gets both player1 and player2 from the cache and starts the game.
+const localStorage = {player1: 'toby', player2: 'sally'};
+
+function getCache(x) {
+    return new IO(() => localStorage[x]);
+};
+
+const game = R.curry(function(p1, p2) { return p1 + ' vs ' + p2; });
+
+//  ex4 :: IO String
+const ex4 = liftA2(game, getCache('player1'), getCache('player2'));
+
+setTimeout(() => {
+    console.info('Ex4 =====');
+    console.dir(ex4.unsafePerformIO());
+}, 100);
