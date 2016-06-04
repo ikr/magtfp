@@ -43,10 +43,15 @@ console.dir(ex2(Maybe.Nothing(), Maybe.Nothing()));
 const makeComments = R.reduce(function(acc, c) { return acc+"<li>"+c+"</li>" }, "");
 const render = R.curry(function(p, cs) { return "<div>"+p.title+"</div>"+makeComments(cs); });
 
-//  ex3 :: Task Error HTML
-function ex3() {
+const trail = R.flip(R.concat);
 
+// ex3 :: Task Error HTML
+function ex3(n) {
+    return liftA2(render, getPost(n), getComments(n));
 }
+
+console.info('Ex3 =====');
+ex3(42).fork(console.error, console.dir);
 
 // TEST HELPERS
 // =====================
